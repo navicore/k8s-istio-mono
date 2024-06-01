@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: restock-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: restock-service
+  template:
+    metadata:
+      labels:
+        app: restock-service
+    spec:
+      containers:
+      - name: restock-service
+        image: restock-service:latest
+        ports:
+        - containerPort: 5002
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: restock-service
+spec:
+  selector:
+    app: restock-service
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 5002

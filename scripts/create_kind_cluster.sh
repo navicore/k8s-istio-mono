@@ -5,7 +5,7 @@ if kind get clusters | grep -q "istio-mono"; then
   echo "Kind cluster already exists."
 else
   # Create kind cluster
-  kind create cluster --name istio-mono --config=kind-config.yaml
+  kind create cluster --config kind-config.yaml --name istio-mono
   echo "Kind cluster created."
 fi
 

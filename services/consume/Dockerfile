@@ -2,7 +2,7 @@ FROM python:3.9-slim
 
 WORKDIR /app
 
-COPY consume_service.py /app/
+COPY services/consume/consume_service.py /app/
 
 RUN pip install flask
 

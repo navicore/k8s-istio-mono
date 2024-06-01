@@ -2,7 +2,7 @@ FROM python:3.9-slim
 
 WORKDIR /app
 
-COPY inventory_service.py /app/
+COPY services/inventory/inventory_service.py /app/
 
 RUN pip install flask
 

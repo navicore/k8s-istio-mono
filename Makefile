@@ -3,9 +3,9 @@
 all: build deploy
 
 build:
-	docker build -t consume-service:latest -f services/consume/Dockerfile .
-	docker build -t restock-service:latest -f services/restock/Dockerfile .
-	docker build -t inventory-service:latest -f services/inventory/Dockerfile .
+	cd services/consume && docker build -t consume-service:latest .
+	cd services/restock && docker build -t restock-service:latest .
+	cd services/inventory && docker build -t inventory-service:latest .
 	kind load docker-image consume-service:latest --name istio-mono
 	kind load docker-image restock-service:latest --name istio-mono
 	kind load docker-image inventory-service:latest --name istio-mono

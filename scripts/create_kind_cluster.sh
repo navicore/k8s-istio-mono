@@ -14,6 +14,7 @@ else
   istioctl install --set profile=demo -y
   kubectl label namespace default istio-injection=enabled
   echo "Istio installed and sidecar injection enabled for default namespace."
+  cd ..
 fi
 
 ./scripts/set-k8s-context.sh

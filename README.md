@@ -9,4 +9,7 @@ go install sigs.k8s.io/cloud-provider-kind@latest
 
 make
 
+#run for load balancer support TODO: mac service
+sudo cloud-provider-kind logs --name istio-mono
+
 ```

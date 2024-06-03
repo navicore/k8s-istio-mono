@@ -20,6 +20,9 @@ spec:
       - name: consume-service
         image: consume-service:latest
         imagePullPolicy: IfNotPresent
+        env:
+        - name: INVENTORY_SERVICE_URL
+          value: "http://inventory-service"
         ports:
         - containerPort: 5001
         livenessProbe:

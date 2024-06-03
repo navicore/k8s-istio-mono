@@ -1,0 +1,20 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: inventory-service
+  namespace: istio-system
+spec:
+  hosts:
+  - "*"
+  gateways:
+  - my-gateway
+  http:
+  - match:
+    - uri:
+        prefix: /update
+    route:
+    - destination:
+        host: inventory-service.default.svc.cluster.local
+        port:
+          number: 80
+

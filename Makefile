@@ -13,6 +13,7 @@ build:
 deploy:
 	kubectl apply -f k8s/gateway.yaml
 	kubectl apply -f k8s/inventory-service.yaml
+	kubectl apply -f k8s/inventory-virtualservice.yaml
 	kubectl apply -f k8s/consume-service.yaml
 	kubectl apply -f k8s/consume-virtualservice.yaml
 	kubectl apply -f k8s/restock-service.yaml

@@ -6,22 +6,28 @@ metrics = PrometheusMetrics(app)  # This sets up the /metrics endpoint
 
 inventory = {}
 
-@app.route('/inventory', methods=['POST'])
+@app.route('/update', methods=['POST'])
 def update_inventory():
     data = request.json
-    sku = data.get('sku')
-    quantity = data.get('quantity')
-    action = data.get('action')
-    
-    if action == 'consume':
-        inventory[sku] = inventory.get(sku, 0) - quantity
-    elif action == 'restock':
-        inventory[sku] = inventory.get(sku, 0) + quantity
-    else:
-        return jsonify({"error": "Invalid action"}), 400
+    # Logic to update inventory
+    return jsonify({'status': 'inventory updated', 'data': data})
 
-    return jsonify({"sku": sku, "quantity": inventory[sku]}), 200
-
+# @app.route('/inventory', methods=['POST'])
+# def update_inventory():
+#     data = request.json
+#     sku = data.get('sku')
+#     quantity = data.get('quantity')
+#     action = data.get('action')
+#     
+#     if action == 'consume':
+#         inventory[sku] = inventory.get(sku, 0) - quantity
+#     elif action == 'restock':
+#         inventory[sku] = inventory.get(sku, 0) + quantity
+#     else:
+#         return jsonify({"error": "Invalid action"}), 400
+#
+#     return jsonify({"sku": sku, "quantity": inventory[sku]}), 200
+#
 @app.route('/healthz', methods=['GET'])
 def healthz():
     return jsonify({"status": "ok"}), 200

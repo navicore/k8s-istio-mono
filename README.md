@@ -1,9 +1,17 @@
+Install
+----------
 
 ```
 brew install kind
 go install sigs.k8s.io/cloud-provider-kind@latest
+```
 
-# creates a kind cluster with name "istio-mono"
+Setup
+----------
+
+Create a kind cluster with name "istio-mono"
+
+```
 ./scripts/create_kind_cluster.sh
 
 make
@@ -13,18 +21,28 @@ make
 
 sudo cloud-provider-kind
 
+#
+# DONE
+#
+
+```
+More Setup
+----------
+
+```
+
 # monitoring
-
-helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
-helm repo add grafana https://grafana.github.io/helm-charts
-helm repo update
-
-kubectl create namespace monitoring
-helm install prometheus-stack prometheus-community/kube-prometheus-stack --namespace monitoring
 
 kubectl port-forward -n monitoring svc/prometheus-stack-grafana 3000:80
 
 #    Username: admin
 #    Password: prom-operator
 
+```
+
+Shutdown
+----------
+
+```
+# TODO
 ```

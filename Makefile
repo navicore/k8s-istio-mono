@@ -24,8 +24,9 @@ deploy:
 	kubectl apply -f k8s/restock-service.yaml
 	kubectl apply -f k8s/restock-virtualservice.yaml
 	kubectl create namespace keycloak
-	helm install keycloak bitnami/keycloak --set auth.adminUser=admin --set auth.adminPassword=secret --namespace keycloak
-	#kubectl apply -f k8s/keycloak-virtualservice.yaml
+	helm install keycloak bitnami/keycloak --set readinessProbe.enabled="false" --set livenessProbe.enabled="false" --set proxy="edge" --set httpRelativePath="/auth" --set auth.adminUser=admin --set auth.adminPassword=secret --namespace keycloak
+
+	kubectl apply -f k8s/keycloak-virtualservice.yaml
 	kubectl create namespace monitoring
 	helm install prometheus-stack prometheus-community/kube-prometheus-stack --namespace monitoring
 

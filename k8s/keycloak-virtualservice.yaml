@@ -11,10 +11,9 @@ spec:
   http:
   - match:
     - uri:
-        prefix: /
+        prefix: /auth
     route:
     - destination:
         host: keycloak.keycloak.svc.cluster.local
         port:
           number: 80
-

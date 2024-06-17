@@ -11,7 +11,7 @@ COPY . /app
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Make port 5003 available to the world outside this container
-EXPOSE 5000
+EXPOSE 5002
 
 # Run app.py when the container launches
-CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:5000", "hello_service:app"]
+CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:5002", "hello_service:app"]

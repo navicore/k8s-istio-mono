@@ -25,3 +25,63 @@ spec:
       - name: config-volume
         configMap:
           name: keycloak-config
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: keycloak-config
+  namespace: keycloak
+data:
+  keycloak-config.sh: |
+    #!/bin/bash
+    KEYCLOAK_URL="http://keycloak.keycloak.svc.cluster.local:80/auth"
+    REALM="flask-realm"
+    CLIENT_ID="flask-app"
+    CLIENT_SECRET="your-client-secret"
+    ADMIN_USER="admin"
+    ADMIN_PASSWORD="secret"
+
+    # Get admin access token
+    ACCESS_TOKEN=$(curl -s -X POST "$KEYCLOAK_URL/realms/master/protocol/openid-connect/token" \
+      -H "Content-Type: application/x-www-form-urlencoded" \
+      -d "username=$ADMIN_USER" \
+      -d "password=$ADMIN_PASSWORD" \
+      -d 'grant_type=password' \
+      -d 'client_id=admin-cli' | jq -r '.access_token')
+
+    # Create realm
+    curl -s -X POST "$KEYCLOAK_URL/admin/realms" \
+      -H "Authorization: Bearer $ACCESS_TOKEN" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "realm": "'"$REALM"'",
+        "enabled": true
+      }'
+
+    # Create client
+    curl -s -X POST "$KEYCLOAK_URL/admin/realms/$REALM/clients" \
+      -H "Authorization: Bearer $ACCESS_TOKEN" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "clientId": "'"$CLIENT_ID"'",
+        "secret": "'"$CLIENT_SECRET"'",
+        "redirectUris": ["http://localhost:5000/*"],
+        "clientAuthenticatorType": "client-secret",
+        "publicClient": false,
+        "standardFlowEnabled": true
+      }'
+
+    # Create user
+    curl -s -X POST "$KEYCLOAK_URL/admin/realms/$REALM/users" \
+      -H "Authorization: Bearer $ACCESS_TOKEN" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "username": "testuser",
+        "enabled": true,
+        "credentials": [{
+          "type": "password",
+          "value": "password",
+          "temporary": false
+        }]
+      }'

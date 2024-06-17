@@ -29,6 +29,7 @@ deploy:
 	kubectl create namespace keycloak
 	helm install keycloak bitnami/keycloak --set readinessProbe.enabled="true" --set livenessProbe.enabled="true" --set proxy="edge" --set httpRelativePath="/auth/" --set auth.adminUser=admin --set auth.adminPassword=secret --namespace keycloak
 	kubectl apply -f k8s/keycloak-virtualservice.yaml
+	kubectl apply -f k8s/keycloak-config-job.yaml
 	kubectl create namespace monitoring
 	helm install prometheus-stack prometheus-community/kube-prometheus-stack --namespace monitoring
 

@@ -1,49 +1,74 @@
-from flask import Flask, request, jsonify
-from prometheus_flask_exporter import PrometheusMetrics
-from flask_oidc import OpenIDConnect
+from flask import Flask, redirect, url_for, session, jsonify
+from authlib.integrations.flask_client import OAuth
+import logging
+
+# Setup logging
+logging.basicConfig(level=logging.DEBUG)
 
 app = Flask(__name__)
-metrics = PrometheusMetrics(app)  # This sets up the /metrics endpoint
+app.secret_key = 'your_secret_key'
 
-app.config.update({
-    'SECRET_KEY': 'your_secret_key',
-    'TESTING': True,
-    'DEBUG': True,
-    'OIDC_CLIENT_SECRETS': 'client_secrets.json',
-    'OIDC_ID_TOKEN_COOKIE_SECURE': False,
-    # 'OIDC_SCOPES': 'openid email profile'.split(),
-    # 'OIDC_INTROSPECTION_AUTH_METHOD': 'client_secret_post',
-    'OIDC_OPENID_REALM': 'http://172.18.0.5/hello/oidc_callback',
-    'OVERWRITE_REDIRECT_URI': 'http://172.18.0.5/hello/oidc_callback'
-})
-
-oidc = OpenIDConnect(app)
+# Configure OAuth
+oauth = OAuth(app)
+oauth.register(
+    name='oauth_provider',
+    client_id='flask-app',
+    client_secret='your-client-secret',
+    access_token_url='http://172.18.0.5/auth/realms/flask-realm/protocol/openid-connect/token',
+    authorize_url='http://172.18.0.5/auth/realms/flask-realm/protocol/openid-connect/auth',
+    authorize_params=None,
+    refresh_token_url=None,
+    redirect_uri='http://172.18.0.5/hello/authorize',  # Updated to match the new root path
+    client_kwargs={'scope': 'openid email profile'},
+)
 
 @app.route('/hello')
-def hello_world():
+def homepage():
+    user = session.get('user')
+    return f'Hello, {user["preferred_username"]}' if user else 'Hello, please <a href="/hello/login">login</a>.'
 
-    return 'Hello, World!'
+@app.route('/hello/login')
+def login():
+    redirect_uri = url_for('authorize', _external=True)
+    authorization_url = oauth.oauth_provider.authorize_url
+    params = {
+        'client_id': oauth.oauth_provider.client_id,
+        'redirect_uri': redirect_uri,
+        'response_type': 'code',
+        'scope': 'openid email profile'
+    }
+    url = authorization_url + '?' + '&'.join([f'{k}={v}' for k, v in params.items()])
+    logging.debug(f"Redirecting to {url}")
+    return redirect(url)
 
-@app.route('/hello/secure')
-@oidc.require_login
-def secure_hello():
-    return jsonify({
-        'message': 'Hello, {}!'.format(oidc.user_getfield('preferred_username')),
-        'email': oidc.user_getfield('email')
-    })
+@app.route('/hello/authorize')
+def authorize():
+    token = oauth.oauth_provider.authorize_access_token()
+    user = oauth.oauth_provider.parse_id_token(token)
+    session['user'] = user
+    return redirect(url_for('homepage'))
 
 @app.route('/hello/logout')
 def logout():
-    oidc.logout()
-    return redirect(url_for('hello_world'))
+    session.pop('user', None)
+    return redirect(url_for('homepage'))
 
-@app.route('/healthz', methods=['GET'])
+@app.route('/hello/secure')
+def secure_hello():
+    user = session.get('user')
+    if user:
+        return jsonify({
+            'message': f'Hello, {user["preferred_username"]}!',
+            'email': user['email']
+        })
+    return redirect(url_for('login'))
+
+@app.route('/hello/healthz', methods=['GET'])
 def healthz():
     return jsonify({"status": "ok"}), 200
 
-@app.route('/readiness', methods=['GET'])
+@app.route('/hello/readiness', methods=['GET'])
 def readiness():
-    # Implement your readiness check logic here
     return jsonify({"status": "ready"}), 200
 
 if __name__ == '__main__':

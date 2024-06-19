@@ -14,14 +14,14 @@ spec:
       annotations:
         prometheus.io/scrape: 'true'
         prometheus.io/path: /metrics
-        prometheus.io/port: '5000'
+        prometheus.io/port: '5002'
     spec:
       containers:
       - name: hello-service
         image: hello-service:latest
         imagePullPolicy: IfNotPresent
         ports:
-        - containerPort: 5000
+        - containerPort: 5002
         env:
         - name: SECRET_KEY
           value: "YOUR_FLASK_SECRET_KEY"
@@ -39,13 +39,13 @@ spec:
         livenessProbe:
           httpGet:
             path: /healthz
-            port: 5000
+            port: 5002
           initialDelaySeconds: 30
           periodSeconds: 10
         readinessProbe:
           httpGet:
             path: /readiness
-            port: 5000
+            port: 5002
           initialDelaySeconds: 30
           periodSeconds: 10
       volumes:
@@ -64,7 +64,7 @@ spec:
   ports:
     - protocol: TCP
       port: 80
-      targetPort: 5000
+      targetPort: 5002
 
 ---
 apiVersion: v1

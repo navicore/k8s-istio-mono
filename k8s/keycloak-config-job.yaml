@@ -66,7 +66,10 @@ data:
       -d '{
         "clientId": "'"$CLIENT_ID"'",
         "secret": "'"$CLIENT_SECRET"'",
-        "redirectUris": ["http://localhost:5000/*"],
+        "redirectUris": [
+          "http://localhost:5002/*",
+          "http://172.18.0.5/*"
+        ],
         "clientAuthenticatorType": "client-secret",
         "publicClient": false,
         "standardFlowEnabled": true

@@ -23,9 +23,8 @@ oauth.register(
 )
 
 @app.route('/hello')
-def homepage():
-    user = session.get('user')
-    return f'Hello, {user["preferred_username"]}' if user else 'Hello, please <a href="/hello/login">login</a>.'
+def hello_world():
+    return 'Hello, World!'
 
 @app.route('/hello/login')
 def login():
@@ -63,11 +62,11 @@ def secure_hello():
         })
     return redirect(url_for('login'))
 
-@app.route('/hello/healthz', methods=['GET'])
+@app.route('/healthz', methods=['GET'])
 def healthz():
     return jsonify({"status": "ok"}), 200
 
-@app.route('/hello/readiness', methods=['GET'])
+@app.route('/readiness', methods=['GET'])
 def readiness():
     return jsonify({"status": "ready"}), 200
 

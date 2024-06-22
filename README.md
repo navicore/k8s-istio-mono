@@ -12,8 +12,6 @@ Setup
 Create a kind cluster with name "istio-mono"
 
 ```
-./scripts/create_kind_cluster.sh
-
 make
 
 # in a separate window or fork, run for load balancer

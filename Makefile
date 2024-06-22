@@ -2,7 +2,11 @@
 
 all: build deploy
 
+delete:
+	kind delete clusters istio-mono
+	
 build:
+	sh ./scripts/create_kind_cluster.sh
 	helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
 	helm repo add grafana https://grafana.github.io/helm-charts
 	helm repo add bitnami https://charts.bitnami.com/bitnami
